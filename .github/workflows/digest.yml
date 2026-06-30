@@ -1,0 +1,29 @@
+name: Weekly Physical AI Digest
+
+on:
+  schedule:
+    # Sunday 6pm PT (PDT = UTC-7, so 1am UTC Monday; drifts to 5pm in PST winter)
+    - cron: '0 1 * * 1'
+  workflow_dispatch: {}  # allow manual runs from the Actions UI
+
+jobs:
+  send-digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate and send digest
+        run: python scripts/generate_digest.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # auto-provided, boosts API rate limits
