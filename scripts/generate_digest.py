@@ -278,30 +278,51 @@ DeepMind blog, MIT News, Hacker News, GitHub, and targeted company searches.
 {raw_content}
 ---
 
-Write a polished weekly digest as HTML (inner body content only — no <html>/<head>/<body> tags).
-Use clean inline styles suitable for email. Structure:
+Write a visually engaging weekly digest as HTML (inner body content only — no <html>/<head>/<body> tags).
+All styles must be inline (Gmail strips <style> tags). Use this exact structure and styling:
 
-<h2>TL;DR</h2>
-3–4 sentence executive summary of the most important developments this week.
+<!-- TL;DR card -->
+<div style="background:#f0f9ff;border-left:4px solid #0ea5e9;border-radius:6px;padding:16px 20px;margin-bottom:28px;">
+  <p style="margin:0 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#0ea5e9;">TL;DR</p>
+  <p style="margin:0;font-size:15px;line-height:1.6;color:#0f172a;">[3–4 sentence executive summary of the week's most important developments]</p>
+</div>
 
-<h2>Research Highlights</h2>
-Top 3–5 papers with a sentence on why each matters. Link titles.
+<!-- Each section follows this pattern: -->
+<div style="margin-bottom:32px;">
+  <h2 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#64748b;border-bottom:1px solid #e2e8f0;padding-bottom:8px;margin:0 0 16px;">🔬 Research Highlights</h2>
+  <!-- Each item: -->
+  <div style="margin-bottom:14px;padding:14px 16px;background:#fafafa;border-radius:6px;border:1px solid #e2e8f0;">
+    <a href="URL" style="font-size:15px;font-weight:600;color:#0f172a;text-decoration:none;">Paper Title</a>
+    <span style="display:inline-block;margin-left:8px;font-size:11px;background:#e0f2fe;color:#0369a1;padding:2px 7px;border-radius:10px;font-weight:600;">Arxiv</span>
+    <p style="margin:6px 0 0;font-size:13px;color:#475569;line-height:1.5;">[Why it matters — 1–2 sentences]</p>
+  </div>
+</div>
 
-<h2>Industry & Company News</h2>
-Notable announcements, products, demos, or funding. Link sources.
+<div style="margin-bottom:32px;">
+  <h2 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#64748b;border-bottom:1px solid #e2e8f0;padding-bottom:8px;margin:0 0 16px;">🏭 Industry & Company News</h2>
+  <!-- Same item pattern, use source badge colors:
+       Company news → background:#fef9c3;color:#854d0e (yellow)
+       Funding → background:#dcfce7;color:#166534 (green)
+       Product/demo → background:#fce7f3;color:#9d174d (pink) -->
+</div>
 
-<h2>Community Picks</h2>
-Interesting HN discussions (high-points threads) and GitHub repos worth watching.
+<div style="margin-bottom:32px;">
+  <h2 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#64748b;border-bottom:1px solid #e2e8f0;padding-bottom:8px;margin:0 0 16px;">💬 Community Picks</h2>
+  <!-- For HN items show point count badge; for GitHub show star count -->
+</div>
 
-<h2>Trend to Watch</h2>
-1–2 sentences on an emerging pattern across this week's content.
+<div style="background:#0f172a;border-radius:6px;padding:16px 20px;margin-bottom:8px;">
+  <p style="margin:0 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;">Trend to Watch</p>
+  <p style="margin:0;font-size:14px;line-height:1.6;color:#f1f5f9;">[1–2 sentences on an emerging pattern this week]</p>
+</div>
 
 Guidelines:
 - Explain WHY things matter, not just what happened.
 - Omit anything not clearly relevant to Physical AI.
-- Keep each section tight — quality over quantity.
-- Inline styles only; keep design minimal and readable in Gmail.
-- Include hyperlinks on all sources/titles.
+- Keep each section tight — quality over quantity (3–5 items per section max).
+- Follow the card/badge styling pattern exactly — it must render well in Gmail.
+- Use relevant emojis only in section headers as shown.
+- All links open in the same window (no target="_blank" needed).
 """
 
 
@@ -325,16 +346,30 @@ def send_email(subject: str, html_body: str) -> None:
     app_password = os.environ["GMAIL_APP_PASSWORD"]
     recipient = os.environ["RECIPIENT_EMAIL"]
 
+    date_label = datetime.now().strftime("%B %d, %Y")
     wrapper = f"""
-    <div style="max-width:680px;margin:0 auto;font-family:Georgia,serif;color:#1a1a1a;line-height:1.6;">
-      <div style="border-bottom:3px solid #111;padding-bottom:12px;margin-bottom:24px;">
-        <span style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#666;">Physical AI Weekly</span>
-        <h1 style="margin:4px 0 0;font-size:22px;">{subject}</h1>
+    <div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#0f172a;line-height:1.6;background:#ffffff;">
+
+      <!-- Header -->
+      <div style="background:#0f172a;border-radius:8px 8px 0 0;padding:28px 32px 24px;">
+        <div style="display:inline-block;background:#0ea5e9;color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;padding:3px 10px;border-radius:20px;margin-bottom:12px;">Weekly Edition</div>
+        <h1 style="margin:0;font-size:26px;font-weight:800;color:#f8fafc;letter-spacing:-0.5px;">Physical AI Weekly</h1>
+        <p style="margin:6px 0 0;font-size:13px;color:#94a3b8;">{date_label} &nbsp;·&nbsp; Robotics · Embodied AI · Hardware Intelligence</p>
       </div>
-      {html_body}
-      <div style="border-top:1px solid #ddd;margin-top:32px;padding-top:12px;font-size:11px;color:#999;">
-        Generated by Claude + fetched from Arxiv, IEEE Spectrum, TechCrunch, HN, GitHub, and more.
+
+      <!-- Body -->
+      <div style="padding:28px 32px 8px;background:#ffffff;">
+        {html_body}
       </div>
+
+      <!-- Footer -->
+      <div style="background:#f8fafc;border-radius:0 0 8px 8px;padding:16px 32px;border-top:1px solid #e2e8f0;">
+        <p style="margin:0;font-size:11px;color:#94a3b8;line-height:1.6;">
+          Curated by Claude · Sources: Arxiv, IEEE Spectrum, TechCrunch, DeepMind Blog, MIT News, Hacker News, GitHub &amp; more.<br>
+          Delivered every Sunday evening.
+        </p>
+      </div>
+
     </div>
     """
 
